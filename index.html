@@ -118,10 +118,9 @@
 
   .grid{
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
   }
-  @media (max-width: 860px){ .grid{ grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 560px){ .grid{ grid-template-columns: 1fr; } }
 
   .card{
@@ -272,6 +271,22 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </div>
     </a>
+
+    <a class="card daily" href="https://sirichai1265.github.io/stock-daily/" target="_blank" rel="noopener">
+      <div class="tag">Stock · All Types</div>
+      <div class="body">
+        <h2>Daily Stock vs Booking</h2>
+        <div class="stats">
+          <div class="stat"><div class="n">6,165</div><div class="l">Total Empty Stock</div></div>
+          <div class="stat"><div class="n">379</div><div class="l">Pending Pickup (Overdue)</div></div>
+          <div class="stat"><div class="n neg">5</div><div class="l">Locations Negative AV Bal.</div></div>
+          <div class="stat"><div class="n">9</div><div class="l">Container Types Tracked</div></div>
+        </div>
+      </div>
+      <div class="go">Open Dashboard
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </div>
+    </a>
   </div>
 
   <footer>
@@ -283,7 +298,8 @@
   const sources = [
     { url: "https://sirichai1265.github.io/hal-stock-hq-dashboard/", pattern: /รายงานประจำวันที่\s*(?:<[^>]+>)?\s*(\d{2})\/(\d{2})\/(\d{4})/, parse: m => new Date(`${m[3]}-${m[2]}-${m[1]}`) },
     { url: "https://sirichai1265.github.io/booking-balance-dashboard/", pattern: /(?:อัพเดทเมื่อ|อัปเดตเมื่อ)\s*(?:<[^>]+>)?\s*(\d{4}-\d{2}-\d{2})(?:\s+(\d{2}:\d{2}))?/, parse: m => new Date(`${m[1]}T${m[2] || "00:00"}`) },
-    { url: "https://sirichai1265.github.io/stock-rh/", pattern: /as of\s+(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})/i, parse: m => new Date(`${m[1]} ${m[2]} ${m[3]}`) }
+    { url: "https://sirichai1265.github.io/stock-rh/", pattern: /as of\s+(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})/i, parse: m => new Date(`${m[1]} ${m[2]} ${m[3]}`) },
+    { url: "https://sirichai1265.github.io/stock-daily/", pattern: /Report date\s+(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})/i, parse: m => new Date(`${m[1]} ${m[2]} ${m[3]}`) }
   ];
   Promise.all(sources.map(s =>
     fetch(s.url).then(r => r.text()).then(html => {
