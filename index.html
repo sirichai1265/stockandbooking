@@ -220,7 +220,7 @@
       <span class="brand-div"></span>
       <div class="hub-label"><h1>STOCK</h1></div>
     </div>
-    <div class="stamp">Last updated<br><span id="stamp-date">2026-09-16</span></div>
+    <div class="stamp">Last updated<br><span id="stamp-date">2026-10-04</span></div>
   </div>
 
   <div class="grid">
@@ -229,10 +229,10 @@
       <div class="body">
         <h2>Stock Report HQ</h2>
         <div class="stats">
-          <div class="stat"><div class="n">1,654</div><div class="l">22GP Stock BKK</div></div>
-          <div class="stat"><div class="n">2,424</div><div class="l">22GP Stock LCH</div></div>
-          <div class="stat"><div class="n">99</div><div class="l">Full Inbound Today</div></div>
-          <div class="stat"><div class="n">3</div><div class="l">Negative Cells WK2</div></div>
+          <div class="stat"><div class="n" data-k="hq-bkk22">1,498</div><div class="l">22GP Stock BKK</div></div>
+          <div class="stat"><div class="n" data-k="hq-lch22">2,201</div><div class="l">22GP Stock LCH</div></div>
+          <div class="stat"><div class="n" data-k="hq-inb">341</div><div class="l">Full Inbound Today</div></div>
+          <div class="stat"><div class="n" data-k="hq-neg">5</div><div class="l">Negative Cells (Last Week)</div></div>
         </div>
       </div>
       <div class="go">Open Dashboard
@@ -245,10 +245,10 @@
       <div class="body">
         <h2>Booking Pickup</h2>
         <div class="stats">
-          <div class="stat"><div class="n">124</div><div class="l">BK No Pending</div></div>
-          <div class="stat"><div class="n">287</div><div class="l">Total Containers Pending</div></div>
-          <div class="stat"><div class="n">116</div><div class="l">Pending LCH Zone</div></div>
-          <div class="stat"><div class="n">170</div><div class="l">Pending BKK Zone</div></div>
+          <div class="stat"><div class="n" data-k="bk-n">1,090</div><div class="l">BK No Pending</div></div>
+          <div class="stat"><div class="n" data-k="bk-bal">2,876</div><div class="l">Total Containers Pending</div></div>
+          <div class="stat"><div class="n" data-k="bk-lch">1,488</div><div class="l">Pending LCH Zone</div></div>
+          <div class="stat"><div class="n" data-k="bk-bkk">1,387</div><div class="l">Pending BKK Zone</div></div>
         </div>
       </div>
       <div class="go">Open Dashboard
@@ -261,10 +261,10 @@
       <div class="body">
         <h2>Stock Daily Reefer</h2>
         <div class="stats">
-          <div class="stat"><div class="n">113</div><div class="l">40'RH Total Stock</div></div>
-          <div class="stat"><div class="n">116</div><div class="l">40'RH Total Booking</div></div>
-          <div class="stat"><div class="n neg">−3</div><div class="l">Total Balance (40'RH)</div></div>
-          <div class="stat"><div class="n neg">−9</div><div class="l">Shortfall BKK27 40'RH</div></div>
+          <div class="stat"><div class="n" data-k="rh-stock">90</div><div class="l">40'RH Total Stock</div></div>
+          <div class="stat"><div class="n" data-k="rh-book">113</div><div class="l">40'RH Total Booking</div></div>
+          <div class="stat"><div class="n neg" data-k="rh-bal">−23</div><div class="l">Total Balance (40'RH)</div></div>
+          <div class="stat"><div class="n neg" data-k="rh-short">−17</div><div class="l">Worst Shortfall 40'RH</div></div>
         </div>
       </div>
       <div class="go">Open Dashboard
@@ -277,10 +277,10 @@
       <div class="body">
         <h2>Daily Stock vs Booking</h2>
         <div class="stats">
-          <div class="stat"><div class="n">6,165</div><div class="l">Total Empty Stock</div></div>
-          <div class="stat"><div class="n">379</div><div class="l">Pending Pickup (Overdue)</div></div>
-          <div class="stat"><div class="n neg">5</div><div class="l">Locations Negative AV Bal.</div></div>
-          <div class="stat"><div class="n">9</div><div class="l">Container Types Tracked</div></div>
+          <div class="stat"><div class="n" data-k="dy-stock">6,165</div><div class="l">Total Empty Stock</div></div>
+          <div class="stat"><div class="n" data-k="dy-pend">379</div><div class="l">Pending Pickup (Overdue)</div></div>
+          <div class="stat"><div class="n neg" data-k="dy-neg" data-warn>5</div><div class="l">Locations Negative AV Bal.</div></div>
+          <div class="stat"><div class="n" data-k="dy-types">9</div><div class="l">Container Types Tracked</div></div>
         </div>
       </div>
       <div class="go">Open Dashboard
@@ -290,29 +290,75 @@
   </div>
 
   <footer>
-    <span>Figures above reflect values at the time this page was built — open the link for the latest data.</span>
+    <span>Figures refresh automatically from each dashboard whenever this page is opened.</span>
   </footer>
 </div>
 
 <script>
+  const num = t => { const n = parseInt(String(t).replace(/[−–]/g, "-").replace(/,/g, "").trim(), 10); return isNaN(n) ? null : n; };
+  const mon = {jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+  const dmy = m => new Date(+m[3], mon[m[2].toLowerCase()], +m[1]);
+  const lbl = (doc, sel, text) => { const e = [...doc.querySelectorAll(sel)].find(x => x.textContent.trim().toLowerCase().includes(text)); return e; };
+
   const sources = [
-    { url: "https://sirichai1265.github.io/hal-stock-hq-dashboard/", pattern: /รายงานประจำวันที่\s*(?:<[^>]+>)?\s*(\d{2})\/(\d{2})\/(\d{4})/, parse: m => new Date(`${m[3]}-${m[2]}-${m[1]}`) },
-    { url: "https://sirichai1265.github.io/booking-balance-dashboard/", pattern: /(?:อัพเดทเมื่อ|อัปเดตเมื่อ)\s*(?:<[^>]+>)?\s*(\d{4}-\d{2}-\d{2})(?:\s+(\d{2}:\d{2}))?/, parse: m => new Date(`${m[1]}T${m[2] || "00:00"}`) },
-    { url: "https://sirichai1265.github.io/stock-rh/", pattern: /as of\s+(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})/i, parse: m => new Date(`${m[1]} ${m[2]} ${m[3]}`) },
-    { url: "https://sirichai1265.github.io/stock-daily/", pattern: /Report date\s+(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})/i, parse: m => new Date(`${m[1]} ${m[2]} ${m[3]}`) }
+    { url: "https://sirichai1265.github.io/hal-stock-hq-dashboard/",
+      date: [/รายงานประจำวันที่\s*(?:<[^>]+>)?\s*(\d{2})\/(\d{2})\/(\d{4})/, m => new Date(+m[3], +m[2] - 1, +m[1])],
+      stats(html, doc) {
+        const tabs = [...doc.querySelectorAll("table")], hdr = t => t.rows[0].textContent;
+        const tot = t => [...t.rows].find(r => /^TOTAL/i.test(r.cells[0].textContent.trim()));
+        const cell = (t, i) => num(tot(t).cells[i].textContent) || 0;
+        const [bkk, lch] = tabs.filter(t => /CURRENT STOCK/.test(hdr(t)));
+        const bal = tabs.filter(t => /STOCK BALANCE END WK/.test(hdr(t)));
+        const wk = hdr(bal[bal.length - 1]).match(/END WK\s*([\d\/\-]+)/)[1];
+        let neg = 0;
+        bal.filter(t => hdr(t).includes(wk)).forEach(t => [...t.rows].slice(1).forEach(r => {
+          if (/^TOTAL/i.test(r.cells[0].textContent.trim())) return;
+          [...r.cells].slice(11).forEach(td => { if ((num(td.textContent) || 0) < 0) neg++; });
+        }));
+        return { "hq-bkk22": cell(bkk, 11), "hq-lch22": cell(lch, 11), "hq-inb": cell(bkk, 2) + cell(bkk, 4), "hq-neg": neg };
+      } },
+    { url: "https://sirichai1265.github.io/booking-balance-dashboard/",
+      date: [/(?:อัพเดทเมื่อ|อัปเดตเมื่อ)\s*(?:<[^>]+>)?\s*(\d{4})-(\d{2})-(\d{2})/, m => new Date(+m[1], +m[2] - 1, +m[3])],
+      stats(html) {
+        const D = JSON.parse(html.match(/const DATA = (\[.*?\]);\s*\n/s)[1]);
+        const sum = g => D.filter(d => d.group === g).reduce((a, d) => a + d.balance, 0);
+        return { "bk-n": D.length, "bk-bal": D.reduce((a, d) => a + d.balance, 0), "bk-lch": sum("LCH"), "bk-bkk": sum("BKK") };
+      } },
+    { url: "https://sirichai1265.github.io/stock-rh/",
+      date: [/(?:as of|pickups of)\s+(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})/i, dmy],
+      stats(html, doc) {
+        const v = t => { const k = lbl(doc, ".stat .k", t); return k ? num(k.parentElement.querySelector(".v").textContent) : null; };
+        return { "rh-stock": v("combined 40'rh stock"), "rh-book": v("combined 40'rh booking"), "rh-bal": v("combined 40'rh balance"), "rh-short": v("shortfall alert") };
+      } },
+    { url: "https://sirichai1265.github.io/stock-daily/",
+      date: [/Report date\s+(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})/i, dmy],
+      stats(html, doc) {
+        const k = t => { const s = lbl(doc, ".kpi span", t); return s ? num(s.previousElementSibling.textContent) : null; };
+        const ty = html.match(/all (\d+) container types/i);
+        return { "dy-stock": k("total empty stock"), "dy-pend": k("total pending pickup"), "dy-neg": k("negative av"), "dy-types": ty ? +ty[1] : null };
+      } }
   ];
+
+  const fmt = n => (n < 0 ? "−" : "") + Math.abs(n).toLocaleString("en-US");
+  function show(key, value) {
+    const el = document.querySelector(`[data-k="${key}"]`);
+    if (!el || value == null) return;
+    el.textContent = fmt(value);
+    el.classList.toggle("neg", value < 0 || (el.hasAttribute("data-warn") && value > 0));
+  }
+
   Promise.all(sources.map(s =>
-    fetch(s.url).then(r => r.text()).then(html => {
-      const m = html.match(s.pattern);
-      return m ? s.parse(m) : null;
+    fetch(s.url, { cache: "no-store" }).then(r => r.text()).then(html => {
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      try { const st = s.stats(html, doc); Object.keys(st).forEach(k => show(k, st[k])); } catch (e) {}
+      const m = html.match(s.date[0]);
+      return m ? s.date[1](m) : null;
     }).catch(() => null)
   )).then(dates => {
     const valid = dates.filter(d => d instanceof Date && !isNaN(d));
     if (!valid.length) return;
     const latest = new Date(Math.max(...valid.map(d => d.getTime())));
-    const y = latest.getFullYear();
-    const mo = String(latest.getMonth() + 1).padStart(2, "0");
-    const d = String(latest.getDate()).padStart(2, "0");
-    document.getElementById("stamp-date").textContent = `${y}-${mo}-${d}`;
-  }).catch(() => {});
+    const p = n => String(n).padStart(2, "0");
+    document.getElementById("stamp-date").textContent = `${latest.getFullYear()}-${p(latest.getMonth() + 1)}-${p(latest.getDate())}`;
+  });
 </script>
